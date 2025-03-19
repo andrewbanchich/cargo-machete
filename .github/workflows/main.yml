@@ -7,7 +7,7 @@ on:
     tags:
       - "*"
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   ci:
@@ -23,12 +23,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: dtolnay/rust-toolchain@master
+      - uses: actions/cache@v4
+        id: cache
         with:
-          toolchain: ${{ matrix.rust }}
-          components: clippy, rustfmt
-
-      - uses: Swatinem/rust-cache@v2
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ matrix.rust }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - run: cargo fmt --all --check
 
@@ -84,7 +88,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-
   # Code mutably borrowed from https://github.com/EmbarkStudios/cargo-deny/, thanks Embark!
   release:
     name: Release
@@ -110,11 +113,6 @@ jobs:
             bin: cargo-machete
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Install stable toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust }}
-          target: ${{ matrix.target }}
       - name: Install musl tools
         if: matrix.os == 'ubuntu-22.04'
         run: |

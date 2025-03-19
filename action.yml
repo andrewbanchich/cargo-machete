@@ -1,6 +1,6 @@
-name: 'cargo-machete'
-description: 'A github action for cargo machete'
-author: 'Cargo machete community'
+name: "cargo-machete"
+description: "A github action for cargo machete"
+author: "Cargo machete community"
 branding:
   color: "black"
   icon: "code"
@@ -8,11 +8,9 @@ runs:
   using: composite
   steps:
     - name: Install cargo-machete
-      uses: clechasseur/rs-cargo@v2
-      with:
-        command: install
-        args: cargo-machete@0.8.0
+      run: cargo install cargo-machete
+      shell: bash
+
     - name: Machete
-      uses: clechasseur/rs-cargo@v2
-      with:
-        command: machete
+      run: cargo machete
+      shell: bash
